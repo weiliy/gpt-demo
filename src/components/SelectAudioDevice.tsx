@@ -28,6 +28,8 @@ const SelectAudioDevice = ({onDeviceChanged}: SelectAudioDeviceProps) => {
     }, [selectedDevice])
 
     useEffect(() => {
+        if (!audioPreviewRef.current) return
+
         if (audioBlob) {
             audioPreviewRef.current.src = URL.createObjectURL(audioBlob);
         }
@@ -48,9 +50,18 @@ const SelectAudioDevice = ({onDeviceChanged}: SelectAudioDeviceProps) => {
     }
 
     const isRecording = recordState === 'recording';
+    const canPlay = audioBlob !== null;
 
     return (
         <Container>
+            <Box width="full">
+                <audio ref={audioPreviewRef}></audio>
+                <AudioDeviceList
+                    devices={deviceList}
+                    onChange={handleChangeAudioInputDevice}
+                ></AudioDeviceList>
+                <VolumeIndicator stream={audioDeviceState.stream} />
+            </Box>
             <ButtonGroup>
                 <Button
                     onClick={() => audioDevicesActions.startRecord()}
@@ -60,15 +71,8 @@ const SelectAudioDevice = ({onDeviceChanged}: SelectAudioDeviceProps) => {
                     onClick={() => audioDevicesActions.stopRecord()}
                     disabled={!isRecording}
                 >Stop</Button>
+                <Button disabled={!canPlay} onClick={() => audioPreviewRef.current.play()}>Play</Button>
             </ButtonGroup>
-            <Box width="full">
-                <audio ref={audioPreviewRef} autoPlay></audio>
-                <AudioDeviceList
-                    devices={deviceList}
-                    onChange={handleChangeAudioInputDevice}
-                ></AudioDeviceList>
-                <VolumeIndicator stream={audioDeviceState.stream} />
-            </Box>
         </Container>
     );
 };
