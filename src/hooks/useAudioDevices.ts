@@ -13,6 +13,7 @@ interface AudioDevicesActions {
     selectDevice: (deviceId: string) => void;
     startRecord: () => void;
     stopRecord: () => void;
+    deleteRecord: () => void;
 }
 
 
@@ -139,6 +140,10 @@ export const useAudioDevices = (audioPreviewRef: MutableRefObject<HTMLAudioEleme
         recorder.stop()
     }
 
+   const deleteRecord = () => {
+        setAudioBlob(null);
+    }
+
     return [
         audioDevicesState,
         {
@@ -146,6 +151,7 @@ export const useAudioDevices = (audioPreviewRef: MutableRefObject<HTMLAudioEleme
             selectDevice,
             startRecord,
             stopRecord,
+            deleteRecord,
         },
         audioBlob,
     ];

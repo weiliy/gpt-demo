@@ -6,16 +6,15 @@ import {Container} from "./Container";
 import VolumeIndicator from "./VolumeIndicator";
 
 interface SelectAudioDeviceProps {
-    onDeviceChanged: (devices: {
-        audioInput?: MediaDeviceInfo;
-    }) => void;
+    onSendRecordAudio: (audio: Blob) => Promise<void>;
 }
 
 let chunks: BlobPart[] = [];
 
-const SelectAudioDevice = ({onDeviceChanged}: SelectAudioDeviceProps) => {
+const SelectAudioDevice = ({onSendRecordAudio }: SelectAudioDeviceProps) => {
     const audioPreviewRef = useRef<HTMLAudioElement>();
     const [audioDeviceState, audioDevicesActions, audioBlob] = useAudioDevices(audioPreviewRef);
+    const [sending, setSending] = useState(false);
 
     const {
         deviceList,
@@ -24,15 +23,15 @@ const SelectAudioDevice = ({onDeviceChanged}: SelectAudioDeviceProps) => {
     } = audioDeviceState;
 
     useEffect(() => {
-        onDeviceChanged({ audioInput: selectedDevice })
-    }, [selectedDevice])
-
-    useEffect(() => {
         if (!audioPreviewRef.current) return
 
         if (audioBlob) {
             audioPreviewRef.current.src = URL.createObjectURL(audioBlob);
+        } else {
+            audioPreviewRef.current.src = '';
+            audioPreviewRef.current.pause();
         }
+
         return () => {
             audioPreviewRef.current.src = '';
             audioPreviewRef.current.pause();
@@ -44,9 +43,15 @@ const SelectAudioDevice = ({onDeviceChanged}: SelectAudioDeviceProps) => {
         audioDevicesActions.selectDevice(deviceId);
     };
 
-
-    const handleStopRecordingClick = () => {
-        audioDevicesActions.stopRecord();
+    const handleSendRecordedAudio = async () => {
+        if (!audioBlob) return;
+        setSending(true);
+        try {
+            await onSendRecordAudio(audioBlob);
+            audioDevicesActions.deleteRecord();
+        } finally {
+            setSending(false);
+        }
     }
 
     const isRecording = recordState === 'recording';
@@ -71,7 +76,11 @@ const SelectAudioDevice = ({onDeviceChanged}: SelectAudioDeviceProps) => {
                     onClick={() => audioDevicesActions.stopRecord()}
                     disabled={!isRecording}
                 >Stop</Button>
-                <Button disabled={!canPlay} onClick={() => audioPreviewRef.current.play()}>Play</Button>
+                <Button disabled={isRecording || !canPlay} onClick={() => audioPreviewRef.current.play()}>Play</Button>
+                <Button
+                    disabled={isRecording || !canPlay || sending} isLoading={sending}
+                    onClick={handleSendRecordedAudio}
+                >Send</Button>
             </ButtonGroup>
         </Container>
     );
