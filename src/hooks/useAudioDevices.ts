@@ -5,6 +5,7 @@ interface AudioDevicesState {
     selectedDevice: MediaDeviceInfo | null;
     volume: number;
     recordState: 'idle' | 'recording' | 'stopped';
+    stream?: MediaStream;
 }
 
 interface AudioDevicesActions {
@@ -35,7 +36,6 @@ const createRecorder = (steam: MediaStream) => {
     return new MediaRecorder(steam);
 }
 
-
 export const useAudioDevices = (audioPreviewRef: MutableRefObject<HTMLAudioElement>): [AudioDevicesState, AudioDevicesActions, Blob | null] => {
     const [audioDevicesState, setAudioDevicesState] = useState<AudioDevicesState>({
         deviceList: [],
@@ -43,16 +43,9 @@ export const useAudioDevices = (audioPreviewRef: MutableRefObject<HTMLAudioEleme
         volume: 0,
         recordState: 'idle',
     });
-    const [stream, setStream] = useState<MediaStream | null>(null);
+    const stream = audioDevicesState.stream;
     const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
     const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-
-    console.group('useAudioDevices render')
-    console.log('audioDevicesState', audioDevicesState);
-    console.log('stream', stream);
-    console.log('recorder', recorder);
-    console.log('audioBlob', audioBlob);
-    console.groupEnd()
 
     useEffect(() => {
         reset();
@@ -110,7 +103,7 @@ export const useAudioDevices = (audioPreviewRef: MutableRefObject<HTMLAudioEleme
     const reset = () => {
         (async () => {
             const constraints = {audio: true, video: false};
-            const stream = await navigator.mediaDevices.getUserMedia(constraints);
+            const _stream = await navigator.mediaDevices.getUserMedia(constraints);
             const _deviceList = filterOnlyAudioInputDevice(await navigator.mediaDevices.enumerateDevices());
             setAudioDevicesState({
                 deviceList: _deviceList,
@@ -118,7 +111,7 @@ export const useAudioDevices = (audioPreviewRef: MutableRefObject<HTMLAudioEleme
                 volume: 0,
                 recordState: 'idle',
             });
-            stream.getTracks().forEach((t) => t.stop());
+            _stream.getTracks().forEach((t) => t.stop());
         })();
     };
 
@@ -133,8 +126,8 @@ export const useAudioDevices = (audioPreviewRef: MutableRefObject<HTMLAudioEleme
             ...prevState,
             selectedDevice,
             recordState: 'stopped',
+            stream: _stream,
         }));
-        setStream(_stream);
         setRecorder(_recorder);
     }
 

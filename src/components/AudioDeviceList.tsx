@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import AudioDeviceItem from "./AudioDeviceItem";
-import {FormLabel, Select} from "@chakra-ui/react";
+import {Select} from "@chakra-ui/react";
 
 interface DeviceListProps {
     devices: MediaDeviceInfo[];
@@ -12,7 +12,7 @@ const DeviceList = ({ devices, onChange }: DeviceListProps) => {
     const [selectedDeviceId, setSelectedDeviceId] = React.useState<string>(undefined);
 
     useEffect(() => {
-        if (devices || devices.length > 0 && selectedDeviceId === undefined) {
+        if (devices && devices.length > 0 && selectedDeviceId === undefined) {
             onChange(devices[0].deviceId);
         }
     }, [devices])

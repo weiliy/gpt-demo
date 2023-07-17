@@ -3,7 +3,7 @@ import {useAudioDevices} from '../hooks/useAudioDevices';
 import AudioDeviceList from './AudioDeviceList';
 import {Box, Button, ButtonGroup} from "@chakra-ui/react";
 import {Container} from "./Container";
-import {createSoundDetector} from "../hooks/soundDetector";
+import VolumeIndicator from "./VolumeIndicator";
 
 interface SelectAudioDeviceProps {
     onDeviceChanged: (devices: {
@@ -67,6 +67,7 @@ const SelectAudioDevice = ({onDeviceChanged}: SelectAudioDeviceProps) => {
                     devices={deviceList}
                     onChange={handleChangeAudioInputDevice}
                 ></AudioDeviceList>
+                <VolumeIndicator stream={audioDeviceState.stream} />
             </Box>
         </Container>
     );
