@@ -4,45 +4,25 @@ import SelectAudioDevice from "../components/SelectAudioDevice";
 import React, {useEffect, useState} from "react";
 import {DarkModeSwitch} from "../components/DarkModeSwitch";
 import {Heading} from "@chakra-ui/react";
-
-import { io, type Socket } from "socket.io-client";
-let socket: Socket | null = null;
-
+import {encodeToBase64} from "next/dist/build/webpack/loaders/utils";
+import type {AudioPromptResponse} from "./api/audioPrompt";
 
 const Index = () => {
-    useEffect(() => {
-        socketInitializer();
-    }, [])
 
-    const socketInitializer = async () => {
-        if (!socket) {
-            console.log('call socket initializer');
-            await fetch("/api/socket");
-            socket = io({ path: "/api/socket" });
+    const sendAudio = async (audio: Blob) => {
+        const formData = new FormData();
+        console.log(typeof audio, audio)
+        const audioFile = new File([audio], 'audio.ogg', { type: audio.type });
+        formData.append('audio', audioFile);
+        formData.append('language', 'zh');
 
-            socket.on("connect", () => {
-                console.log("############# connected");
-            });
+        const response : Response = await fetch('/api/audioPrompt', {
+            method: 'POST',
+            body: formData
+        });
 
-            socket.on("hello", (msg: string) => {
-                console.log("hello", msg);
-            });
-
-            socket.on("userServerConnection", () => {
-                console.log("a user connected (client)");
-            });
-
-            socket.on("userServerDisconnection", (socketid: string) => {
-                console.log(socketid);
-            });
-        }
-
-        return () => {
-            if (socket) {
-                socket.disconnect();
-                socket = null;
-            }
-        };
+        const { input, output, mood} = await response.json();
+        console.log(input, output, mood);
     }
 
     return (
@@ -50,14 +30,7 @@ const Index = () => {
             <Main>
                 <Heading>GTP Demo</Heading>
                 <SelectAudioDevice
-                    onSendRecordAudio={async (audio) => {
-                        return new Promise((resolve) => {
-                            setTimeout(() => {
-                                alert('Audio sent');
-                                resolve();
-                            }, 1000);
-                        })
-                    }}
+                    onSendRecordAudio={sendAudio}
                 ></SelectAudioDevice>
             </Main>
             <DarkModeSwitch/>
