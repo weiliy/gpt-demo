@@ -18,24 +18,24 @@ const audioPromptHandler = (req: NextApiRequest, res: NextApiResponse<AudioPromp
             const dt = new Date().toLocaleString()
             if (n === 0) {
                 return res.status(200).json({
-                    input: 'Hello, my name is John. I am a doctor. Now I will ask you a few questions. What is your name?',
-                    output: `My name is AI. I am a robot.${dt}`,
+                    input: 'Hello, my name is Happy. I am a doctor. Now I will ask you a few questions. What is your name?',
+                    output: `My name is AI. Happy. I am a robot.${dt}`,
                     mode: 'happy',
                 });
             }
 
             if (n === 1) {
                 return res.status(200).json({
-                    input: 'Hello, my name is John. I am a doctor. Now I will ask you a few questions. What is your name?',
-                    output: `My name is AI. I am a robot.${dt}`,
+                    input: 'Hello, my name is Neutral. I am a doctor. Now I will ask you a few questions. What is your name?',
+                    output: `My name is AI. Neutral. I am a robot.${dt}`,
                     mode: 'neutral',
                 });
             }
 
             if (n === 2) {
                 return res.status(200).json({
-                    input: 'Hello, my name is John. I am a doctor. Now I will ask you a few questions. What is your name?',
-                    output: `My name is AI. I am a robot. ${dt}`,
+                    input: 'Hello, my name is Sad. I am a doctor. Now I will ask you a few questions. What is your name?',
+                    output: `My name is AI. Sad. I am a robot.${dt}`,
                     mode: 'sad',
                 });
             }

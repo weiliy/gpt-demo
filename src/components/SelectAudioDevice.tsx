@@ -18,7 +18,6 @@ const SelectAudioDevice = ({onSendRecordAudio }: SelectAudioDeviceProps) => {
 
     const {
         deviceList,
-        selectedDevice,
         recordState,
     } = audioDeviceState;
 
