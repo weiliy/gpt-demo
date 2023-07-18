@@ -15,10 +15,11 @@ const audioPromptHandler = (req: NextApiRequest, res: NextApiResponse<AudioPromp
         case 'POST':
             // TODO: remove mock response
             const n = Math.floor(Math.random() * 3);
+            const dt = new Date().toLocaleString()
             if (n === 0) {
                 return res.status(200).json({
                     input: 'Hello, my name is John. I am a doctor. Now I will ask you a few questions. What is your name?',
-                    output: 'My name is AI. I am a robot.',
+                    output: `My name is AI. I am a robot.${dt}`,
                     mode: 'happy',
                 });
             }
@@ -26,7 +27,7 @@ const audioPromptHandler = (req: NextApiRequest, res: NextApiResponse<AudioPromp
             if (n === 1) {
                 return res.status(200).json({
                     input: 'Hello, my name is John. I am a doctor. Now I will ask you a few questions. What is your name?',
-                    output: 'My name is AI. I am a robot.',
+                    output: `My name is AI. I am a robot.${dt}`,
                     mode: 'neutral',
                 });
             }
@@ -34,7 +35,7 @@ const audioPromptHandler = (req: NextApiRequest, res: NextApiResponse<AudioPromp
             if (n === 2) {
                 return res.status(200).json({
                     input: 'Hello, my name is John. I am a doctor. Now I will ask you a few questions. What is your name?',
-                    output: 'My name is AI. I am a robot.',
+                    output: `My name is AI. I am a robot. ${dt}`,
                     mode: 'sad',
                 });
             }

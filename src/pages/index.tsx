@@ -1,13 +1,16 @@
 import {Container} from '../components/Container'
 import {Main} from '../components/Main'
 import SelectAudioDevice from "../components/SelectAudioDevice";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {DarkModeSwitch} from "../components/DarkModeSwitch";
 import {Heading} from "@chakra-ui/react";
-import {encodeToBase64} from "next/dist/build/webpack/loaders/utils";
 import type {AudioPromptResponse} from "./api/audioPrompt";
+import {ChatHistory} from "../components/ChatHistory";
+import {ControlPanel} from "../components/ControlPanel";
 
 const Index = () => {
+
+    const [chatHistory, setChatHistory] = useState<AudioPromptResponse[]>([]);
 
     const sendAudio = async (audio: Blob) => {
         const formData = new FormData();
@@ -21,18 +24,21 @@ const Index = () => {
             body: formData
         });
 
-        const { input, output, mood} = await response.json();
-        console.log(input, output, mood);
+        const { input, output, mode } : AudioPromptResponse = await response.json();
+        setChatHistory((history) => [...history, { input, output, mode }]);
     }
 
     return (
         <Container height="100vh">
+            <Heading>GTP Demo</Heading>
             <Main>
-                <Heading>GTP Demo</Heading>
+                <ChatHistory history={chatHistory}/>
+            </Main>
+            <ControlPanel>
                 <SelectAudioDevice
                     onSendRecordAudio={sendAudio}
                 ></SelectAudioDevice>
-            </Main>
+            </ControlPanel>
             <DarkModeSwitch/>
         </Container>
     )

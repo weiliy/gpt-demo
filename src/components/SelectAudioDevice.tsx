@@ -33,6 +33,7 @@ const SelectAudioDevice = ({onSendRecordAudio }: SelectAudioDeviceProps) => {
         }
 
         return () => {
+            if (!audioPreviewRef.current) return
             audioPreviewRef.current.src = '';
             audioPreviewRef.current.pause();
         }
